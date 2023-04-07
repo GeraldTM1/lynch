@@ -1,0 +1,212 @@
+<html><head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<title>Lynch</title><style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    body {
+      overflow: hidden;
+    }
+
+    body {
+      background-color: black;
+    }
+
+    header {
+      background-color: rgb(21, 21, 21);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    header img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+    header h1 {
+      margin: 0;
+      color: white;
+      text-transform: capitalize;
+    }
+    .fade-in-box {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 400px;
+      border-radius: 30px;
+      background-color: rgb(21, 21, 21);
+      opacity: 0.25;
+      transition: opacity 1s;
+    }
+
+    .fade-in-box.fade-in {
+      opacity: .75;
+    }
+  </style></head>
+
+  
+  
+
+<body>
+  <header>
+    <img src="logo.png" alt="Logo">
+    <h1>Lynch</h1>
+  </header>
+  <canvas id="canvas" width="7680" height="4320"></canvas>
+  <div class="fade-in-box fade-in"></div>
+  <script>
+    window.addEventListener('load', () => {
+      const fadeBox = document.querySelector('.fade-in-box');
+      fadeBox.classList.add('fade-in');
+    });
+  </script>
+  <div class="container">
+    <p class="animate__animated animate__bounceInLeft">Lynch</p>
+  </div>
+  
+
+<style>
+
+.container {
+position: fixed;
+top: 40%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center; /* center align container horizontally */
+}
+
+p {
+font-family: 'Inter', sans-serif;
+font-weight: 900;
+font-size: 70px;
+margin: 0;
+color: white;
+}
+
+
+
+</style>
+<button id="download-button"type="submit" onclick="window.open('lynch.exe')">Download!</button>
+<style>.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200vh;
+  text-align: center;
+}
+
+#download-button {
+  position: fixed;
+top: 55%;
+left: 50%;
+transform: translate(-50%, -50%);
+background-color: white;
+  border: none;
+  border-radius: 40px;
+  color: black;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  padding: 20px 40px;
+  margin: 0 auto;
+  
+}
+
+</style>
+<script>
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const numStars = 100;
+const stars = [];
+const shootingStars = [];
+
+for (let i = 0; i < numStars; i++) {
+stars.push({
+  x: Math.random() * canvas.width,
+  y: Math.random() * canvas.height,
+  radius: Math.random() * 3 + 1,
+  vx: (Math.random() - 0.5) * 2,
+  vy: (Math.random() - 0.5) * 2,
+  isShootingStar: false
+});
+}
+
+function draw() {
+context.clearRect(0, 0, canvas.width, canvas.height);
+
+for (let i = 0; i < numStars; i++) {
+  const star = stars[i];
+  const twinkleOffset = (Math.random() - 0.5) * 2;
+  const twinkleAlpha = Math.max(0, Math.min(1, star.radius + twinkleOffset));
+
+  context.beginPath();
+  context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+  context.fillStyle = `rgba(255, 255, 255, ${twinkleAlpha})`;
+  context.fill();
+  star.x += star.vx * 0.05;
+    star.y += star.vy * 0.05;
+  // Check if star should turn into shooting star
+  if (!star.isShootingStar && Math.random() < 0.000005) {
+    star.isShootingStar = true;
+    shootingStars.push({
+      x: star.x,
+      y: star.y,
+      radius: 3,
+      vx: (Math.random() - 0.5) * 10,
+      vy: (Math.random() - 0.5) * 10
+    });
+  }
+}
+
+for (let i = 0; i < shootingStars.length; i++) {
+  const star = shootingStars[i];
+  const trailLength = 20;
+  const trailWidth = star.radius / trailLength;
+
+  for (let j = 0; j < trailLength; j++) {
+    const trailAlpha = (j + 1) / trailLength;
+
+    context.beginPath();
+    context.strokeStyle = 'blue';
+    context.arc(star.x - star.vx * j, star.y - star.vy * j, star.radius - trailWidth * j, 0, Math.PI * 2);
+    context.fillStyle = `rgba(255, 255, 255, ${trailAlpha})`;
+    context.fill();
+  }
+
+  context.beginPath();
+  context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+  context.fillStyle = 'white';
+  context.fill();
+
+  star.x += star.vx * 0.1;
+  star.y += star.vy * 0.1;
+}
+
+// Remove shooting stars that have gone offscreen
+for (let i = shootingStars.length - 1; i >= 0; i--) {
+  if (shootingStars[i].x < -shootingStars[i].radius ||
+      shootingStars[i].x > canvas.width + shootingStars[i].radius ||
+      shootingStars[i].y < -shootingStars[i].radius ||
+      shootingStars[i].y > canvas.height + shootingStars[i].radius) {
+    shootingStars.splice(i, 1);
+  }
+}
+
+requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+
+</body></html>
